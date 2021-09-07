@@ -1,0 +1,126 @@
+#include<stdio.h>
+#include<stdlib.h>
+void insert( double *,double *,int,double *);
+void profitbyweight(double *,double *,double *,int);
+void quicksort(double *, double *, double *,int ,int , int );
+double knapsack(double *,double *,int, double );
+void display(double);
+
+int main()
+{
+    double *w,*p, *ratio, cap, k;
+    int n,i;
+    printf("Enter number of objects: ");
+    scanf("%d",&n);
+    w=(double *)malloc(sizeof(double)*n);
+    p=(double *)malloc(sizeof(double)*n);
+    ratio=(double *)malloc(sizeof(double)*n);
+    insert(p,w,n,&cap);
+    profitbyweight(p,w,ratio,n);
+    quicksort(p,w,ratio,n,0,n-1);
+    k=knapsack(p,w,n,cap);
+    display(k);
+}
+void insert(double *p,double *w,int n,double *cap)
+{
+    int i;
+    for(i=0;i<n;i++)
+    {
+        printf("Enter profit of object %d: ",i+1);
+        scanf("%lf",p+i);
+        printf("Enter weight of object %d: ", i+1);
+        scanf("%lf",w+i);
+        printf("\n");
+    }
+    printf("Enter Capacity weight of the Knapsack: ");
+    scanf("%lf",cap);
+}
+void profitbyweight(double *p, double *w, double *ratio,int n)
+{
+    int i;
+    for(i=0;i<n;i++)
+    {
+        *(ratio+i)= *(p+i) / *(w+i);
+    }
+}
+void quicksort(double *p, double *w, double *ratio,int n,int first, int last)
+  {
+  int fix,j,i;
+  double temp;
+  if(first<last)
+     {
+     fix=first;
+     i=first;
+     j=last;
+     while(i<j)
+        {
+        while(ratio[i]>=ratio[fix]&&i<last)
+            i++;
+        while(ratio[j]<ratio[fix])
+            j--;
+        if(i<j)
+            {
+            temp=ratio[i];
+            ratio[i]=ratio[j];
+            ratio[j]=temp;
+            
+            temp=p[i];
+            p[i]=p[j];
+            p[j]=temp;
+            
+            temp=w[i];
+            w[i]=w[j];
+            w[j]=temp;
+            }
+        }
+    temp=ratio[fix];
+    ratio[fix]=ratio[j];
+    ratio[j]=temp;
+    
+    temp=p[fix];
+    p[fix]=p[j];
+    p[j]=temp;
+    
+    temp=w[fix];
+    w[fix]=w[j];
+    w[j]=temp;
+    
+    quicksort(p,w,ratio,n,first,j-1);
+    quicksort(p,w,ratio,n,j+1,last);
+}
+}
+
+double knapsack(double *p,double *w,int n,double cap)
+{
+    double *x= (double *)malloc(sizeof(double)*n);
+    int i,j;
+    double profit=0.0,temp;
+    for(i=0;i<n;i++)
+    x[i]=0.0;
+    
+    temp=cap;
+    i=0;
+    for(i=0;i<n;i++)
+    {
+        if(w[i]<=temp)
+        {
+            x[i]=1.0;
+            profit=profit+p[i];
+            temp=temp-w[i];
+        }
+        else
+        break;
+    }
+    
+    if(i<n)
+    {
+        x[i]=temp/w[i];
+    }
+    profit= profit + (x[i]*p[i]);
+    return profit;
+}
+
+void display(double k)
+{
+    printf("\nThe Maximum profit from the Knapsack is %0.2lf",k);
+}
